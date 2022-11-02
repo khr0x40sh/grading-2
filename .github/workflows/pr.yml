@@ -1,0 +1,27 @@
+name: PR Management
+
+on:
+  pull_request_target:
+    types: [opened]
+    branches-ignore:    
+      - 'main'
+
+jobs:
+  close_pr:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: superbrothers/close-pull-request@v3
+      with:
+        comment: "Pull Requests are only accepted against the `main` branch."
+  cleanup_branch:
+    runs-on: ubuntu-latest
+    name: Delete non-grading branches
+    steps:
+      - name: Delete those pesky dead branches
+        uses: phpdocker-io/github-actions-delete-abandoned-branches@v1
+        id: delete_branches
+        with:
+          github_token: ${{ github.token }}
+          last_commit_age_days: -1
+          ignore_branches: main,grading
+          dry_run: no
